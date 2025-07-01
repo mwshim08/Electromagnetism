@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>이상형 월드컵</title>
+  <style>
+    body { font-family: sans-serif; text-align: center; }
+    .matchup { display: flex; justify-content: center; gap: 50px; margin-top: 20px; }
+    .candidate { cursor: pointer; }
+    .candidate img { width: 300px; height: 300px; object-fit: cover; border-radius: 10px; }
+    .candidate-name { margin-top: 10px; font-weight: bold; }
+    #title { font-size: 2em; margin-top: 20px; }
+  </style>
+</head>
+<body>
+
+<h1 id="title">8강</h1>
+<div class="matchup" id="matchup"></div>
+
+<script>
+  // ✅ 후보 데이터 수정 영역: 이미지 URL과 이름을 바꾸세요
+  const candidates = [
+    { name: "가우스 법칙", img: "https://ibb.co/cXySCDr0" },
+    { name: "후보 2", img: "https://ibb.co/1t86WWNy" },
+    { name: "후보 3", img: "https://ibb.co/23zphRn4" },
+    { name: "후보 4", img: "https://ibb.co/5X4fg6mz" },
+    { name: "후보 5", img: "https://ibb.co/dsz02Rdc" },
+    { name: "후보 6", img: "https://ibb.co/G3BNTf2q" },
+    { name: "후보 7", img: "https://ibb.co/PvTTfs90" },
+    { name: "후보 8", img: "https://ibb.co/cSBLdkV5" },
+  ];
+
+  let currentRound = shuffle([...candidates]);
+  let nextRound = [];
+  let index = 0;
+  let round = 8;
+
+  function shuffle(array) {
+    return array.sort(() => Math.random() - 0.5);
+  }
+
+  function renderMatchup() {
+    const matchup = document.getElementById("matchup");
+    matchup.innerHTML = "";
+
+    if (index >= currentRound.length) {
+      if (nextRound.length === 1) {
+        showWinner(nextRound[0]);
+        return;
+      }
+      currentRound = nextRound;
+      nextRound = [];
+      index = 0;
+      round /= 2;
+      document.getElementById("title").textContent = `${round}강`;
+    }
+
+    const left = currentRound[index];
+    const right = currentRound[index + 1];
+
+    [left, right].forEach((candidate, i) => {
+      const div = document.createElement("div");
+      div.className = "candidate";
+      div.onclick = () => selectCandidate(i);
+      
+      const img = document.createElement("img");
+      img.src = candidate.img;
+      const name = document.createElement("div");
+      name.className = "candidate-name";
+      name.textContent = candidate.name;
+      
+      div.appendChild(img);
+      div.appendChild(name);
+      matchup.appendChild(div);
+    });
+  }
+
+  function selectCandidate(choice) {
+    const selected = currentRound[index + choice];
+    nextRound.push(selected);
+    index += 2;
+    renderMatchup();
+  }
+
+  function showWinner(winner) {
+    document.getElementById("title").textContent = "🏆 우승!";
+    const matchup = document.getElementById("matchup");
+    matchup.innerHTML = `
+      <div>
+        <img src="${winner.img}" style="width:300px; height:300px; border-radius:10px;"><br>
+        <div class="candidate-name">${winner.name}</div>
+      </div>
+    `;
+  }
+
+  // 시작
+  renderMatchup();
+</script>
+
+</body>
+</html>
