@@ -2,139 +2,191 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <title>이상형 월드컵</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>나의 에너지 절약지수는 얼마일까?</title>
   <style>
-    body { font-family: sans-serif; text-align: center; }
-    .matchup { display: flex; justify-content: center; gap: 50px; margin-top: 20px; }
-    .candidate { cursor: pointer; }
-    .candidate img { width: 600px; height: 600px; object-fit: contain; border-radius: 10px; background-color: white; }
-    .candidate-name { margin-top: 10px; font-weight: bold; }
-    #title { font-size: 2em; margin-top: 20px; }
+    body {
+      background-color: #e0e0e0;
+      font-family: Arial, sans-serif;
+      padding: 0;
+      margin: 0;
+    }
+    .header {
+      background-color: #444;
+      color: white;
+      text-align: center;
+      padding: 20px 0;
+    }
+    .container {
+      max-width: 800px;
+      margin: 30px auto;
+      background-color: #f9f9f9;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    h2 {
+      color: #333;
+    }
+    label {
+      display: block;
+      margin-top: 15px;
+    }
+    input[type=number] {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      appearance: textfield;
+    }
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+    button {
+      margin-top: 20px;
+      padding: 12px;
+      width: 100%;
+      background-color: #666;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #555;
+    }
+    .result-box {
+      background-color: #eee;
+      margin-top: 20px;
+      padding: 15px;
+      border-radius: 5px;
+    }
+    img.histogram {
+      width: 100%;
+      margin-top: 30px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+    }
   </style>
 </head>
 <body>
+  <div class="header">
+    <h1>나의 에너지 절약지수는 얼마일까?</h1>
+  </div>
 
-<h1 id="title">8강</h1>
-<div class="matchup" id="matchup"></div>
+  <div class="container">
+    <h2>에너지 사용 관련 정보를 입력해주세요!</h2>
 
-<script>
-  const candidates = [
-    {
-      name: "가우스 법칙",
-      img: "https://ifh.cc/g/2A3tpc.jpg",
-      desc: "가우스 법칙은 전기장이 폐곡면을 통과하는 총 전기 유속이 그 내부에 존재하는 총 전하량에 비례한다는 법칙입니다. 이 법칙은 전기장의 분포를 대칭성 기반으로 간단히 계산할 수 있게 해주며, 특히 구형, 원통형, 평면 대칭 구조에서 매우 유용하게 사용됩니다. 수식으로는 ∮E·dA = Q_in/ε₀ 형태로 표현됩니다."
-    },
-    {
-      name: "로렌츠 힘",
-      img: "https://ifh.cc/g/rQmbhR.jpg",
-      desc: "로렌츠 힘은 전하가 전기장(E)과 자기장(B)에 동시에 존재할 때 받는 힘으로, 전자기학에서 매우 핵심적인 역할을 합니다. 이 힘은 F = q(E + v × B)로 주어지며, 입자의 운동 방향과 자기장 방향에 따라 힘의 방향이 결정됩니다. 입자의 궤적, 입자 가속기, 전자기 유도 현상 등을 설명할 때 필수적입니다."
-    },
-    {
-      name: "맥스웰 방정식",
-      img: "https://ifh.cc/g/2aTlRC.jpg",
-      desc: "맥스웰 방정식은 전자기장을 기술하는 4개의 미분 방정식으로, 전기장과 자기장의 생성과 상호작용을 통합적으로 설명합니다. 이 방정식은 고전 전자기학의 핵심이며, 전자기파의 존재를 예측하고 광학, 무선통신, 전기공학 등 다양한 분야의 이론적 토대를 제공합니다."
-    },
-    {
-      name: "전기장",
-      img: "https://ifh.cc/g/dtb6kc.jpg",
-      desc: "전기장은 전하가 공간에 형성하는 물리적 장으로, 다른 전하에 전기력을 작용하게 만듭니다. 단위 양전하가 받는 힘으로 정의되며, 방향과 세기를 가진 벡터입니다. 전기장은 정전기 현상, 유전체 속의 전하 분포, 축전기 작동 원리 등을 설명할 수 있게 해줍니다."
-    },
-    {
-      name: "전위차 공식",
-      img: "https://ifh.cc/g/zsCp3O.jpg",
-      desc: "전위차는 두 지점 간의 전기적 위치 에너지 차이를 나타내며, 전하가 전기장 내에서 이동할 때 하는 일과 밀접한 관련이 있습니다. 수식으로는 V = W/q 또는 V = Ed로 표현되며, 축전기나 회로 내 에너지 전달, 전자 흐름의 동기를 설명할 때 사용됩니다."
-    },
-    {
-      name: "쿨롱 법칙",
-      img: "https://ifh.cc/g/BzYCr5.jpg",
-      desc: "쿨롱 법칙은 두 전하 사이에 작용하는 전기력이 전하의 곱에 비례하고 거리의 제곱에 반비례한다는 기본적인 법칙입니다. 이는 F = k(q₁q₂)/r²로 표현되며, 전기력의 방향은 같은 전하는 반발하고 다른 전하는 끌어당기는 방식입니다. 정전기 문제 해결에 기초가 됩니다."
-    },
-    {
-      name: "패러데이 법칙",
-      img: "https://ifh.cc/g/HrcbFR.jpg",
-      desc: "패러데이 법칙은 시간에 따라 변하는 자기장이 전기장을 유도한다는 내용을 담고 있으며, 전자기 유도 현상을 설명합니다. 발전기, 변압기, 전자기 유도 브레이크 등의 원리로 쓰입니다. 수식으로는 유도기전력 ε = -dΦ/dt로 표현되며, 마이너스 부호는 렌츠의 법칙을 포함합니다."
-    },
-    {
-      name: "전기적위치에너지",
-      img: "https://ifh.cc/g/8vh0wL.jpg",
-      desc: "전기적 위치 에너지는 전하가 전기장 내 특정 위치에 존재할 때 갖는 에너지입니다. 이 에너지는 위치에 따라 달라지며, 전하를 이동시키는 데 필요한 일의 양으로 정의됩니다. 전위차와 함께 회로 내 에너지 저장, 전기적 시스템의 안정성 분석에 중요한 역할을 합니다."
-    }
-  ];
+    <label for="summerTemp">여름철 평균 실내 온도 (°C) - 에어컨 설정 온도</label>
+    <input type="number" id="summerTemp" placeholder="예: 26">
 
+    <label for="winterTemp">겨울철 평균 실내 온도 (°C) - 난방 설정 온도</label>
+    <input type="number" id="winterTemp" placeholder="예: 20">
 
-  let currentRound = shuffle([...candidates]);
-  let nextRound = [];
-  let index = 0;
-  let round = 8;
+    <label for="summerTime">여름철 냉방 사용 시간 (시간)</label>
+    <input type="number" id="summerTime" placeholder="예: 4">
 
-  function shuffle(array) {
-    return array.sort(() => Math.random() - 0.5);
-  }
+    <label for="winterTime">겨울철 난방 사용 시간 (시간)</label>
+    <input type="number" id="winterTime" placeholder="예: 5">
 
-  function renderMatchup() {
-    const matchup = document.getElementById("matchup");
-    matchup.innerHTML = "";
+    <label for="chargeTime">충전(노트북/폰) 시간 (시간)</label>
+    <input type="number" id="chargeTime" placeholder="예: 3">
 
-    if (index >= currentRound.length) {
-      if (nextRound.length === 1) {
-        showWinner(nextRound[0]);
-        return;
+    <button onclick="calculateScore()">절약지수 계산</button>
+
+    <div id="result" class="result-box"></div>
+
+    <img class="histogram" src="https://lh3.google.com/u/0/d/1i_hwkV1DitE8eiZA3SK29pZVhMtj7gKd=w1920-h912-iv1?auditContext=forDisplay" alt="절약지수 분포 히스토그램">
+  </div>
+ 
+  <script>
+    const peerData = [
+      -5.4, -3.2, -1.8, 0.1, 0.5, 1.0, 2.2, 3.3, 4.4, 5.1, 6.2, 7.0, 8.5, 9.0, 10.3,
+      11.5, 12.1, 13.4, 14.6, 15.8, 16.9, 17.5, 18.2, 19.3, 20.5, 0.2, -2.3, 5.7, 7.1, 8.9,
+      6.3, 3.7, 2.6, -1.1, 1.8, 3.2, 4.5, 7.8, 6.9, 2.1, -4.0, -2.5, 0.0, 2.4, 3.9, 5.2, 6.6, 9.9
+    ];
+
+    const avg = {
+      summerTemp: 25.3,
+      winterTemp: 21.2,
+      summerTime: 3.6,
+      winterTime: 4.1,
+      chargeTime: 2.8
+    };
+
+    function calculateScore() {
+      const summerTemp = parseFloat(document.getElementById('summerTemp').value);
+      const winterTemp = parseFloat(document.getElementById('winterTemp').value);
+      const summerTime = parseFloat(document.getElementById('summerTime').value);
+      const winterTime = parseFloat(document.getElementById('winterTime').value);
+      const chargeTime = parseFloat(document.getElementById('chargeTime').value);
+
+      const totalTime = summerTime + winterTime + chargeTime;
+
+      const score = 
+        1.5 * (summerTemp - 20) +
+        -1.2 * (winterTemp - 20) +
+        -1.0 * (summerTime - 2.5) +
+        -1.0 * (winterTime - 2.5) +
+        -0.7 * (chargeTime - 2);
+
+      const percentile = peerData.filter(p => p <= score).length / peerData.length * 100;
+
+      let feedback = `<strong>당신의 절약지수:</strong> ${score.toFixed(2)}<br>`;
+      feedback += `<strong>상위 백분위:</strong> ${percentile.toFixed(1)}%<br><br>`;
+
+      const dSummer = summerTemp - avg.summerTemp;
+      if (dSummer < -2) {
+        feedback += "<strong>[여름 온도]</strong> 너무 낮아요. 에너지 낭비가 클 수 있습니다.<br>";
+      } else if (dSummer < -1) {
+        feedback += "<strong>[여름 온도]</strong> 다소 낮아요. 조금 높여보세요.<br>";
+      } else if (dSummer < 1) {
+        feedback += "<strong>[여름 온도]</strong> 적절한 온도입니다.<br>";
+      } else if (dSummer < 2) {
+        feedback += "<strong>[여름 온도]</strong> 좋은 설정입니다.<br>";
+      } else {
+        feedback += "<strong>[여름 온도]</strong> 훌륭해요! 매우 절약적입니다.<br>";
       }
-      currentRound = nextRound;
-      nextRound = [];
-      index = 0;
-      round /= 2;
-      document.getElementById("title").textContent = `${round}강`;
+
+      const dWinter = winterTemp - avg.winterTemp;
+      if (dWinter > 2) {
+        feedback += "<strong>[겨울 온도]</strong> 너무 높아요. 에너지 낭비가 클 수 있습니다.<br>";
+      } else if (dWinter > 1) {
+        feedback += "<strong>[겨울 온도]</strong> 다소 높아요. 조금 낮춰보세요.<br>";
+      } else if (dWinter > -1) {
+        feedback += "<strong>[겨울 온도]</strong> 적절한 온도입니다.<br>";
+      } else if (dWinter > -2) {
+        feedback += "<strong>[겨울 온도]</strong> 좋은 설정입니다.<br>";
+      } else {
+        feedback += "<strong>[겨울 온도]</strong> 훌륭해요! 매우 절약적입니다.<br>";
+      }
+
+      const dCharge = chargeTime - avg.chargeTime;
+      if (dCharge > 2) {
+        feedback += "<strong>[충전 시간]</strong> 너무 깁니다. 절약을 고려해보세요.<br>";
+      } else if (dCharge > 1) {
+        feedback += "<strong>[충전 시간]</strong> 다소 깁니다.<br>";
+      } else if (dCharge > -1) {
+        feedback += "<strong>[충전 시간]</strong> 평균적입니다.<br>";
+      } else {
+        feedback += "<strong>[충전 시간]</strong> 충전을 잘 관리하고 있어요.<br>";
+      }
+
+      if (totalTime > 12) {
+        feedback += "<strong>[충전용 전기 사용]</strong> 사용량이 매우 많아요. 줄일 여지가 큽니다.<br>";
+      } else if (totalTime > 9) {
+        feedback += "<strong>[충전용 전기 사용]</strong> 평균보다 높은 편입니다.<br>";
+      } else if (totalTime > 6) {
+        feedback += "<strong>[충전용 전기 사용]</strong> 적정 수준입니다.<br>";
+      } else {
+        feedback += "<strong>[충전용 전기 사용]</strong> 매우 절약적입니다!<br>";
+      }
+
+      document.getElementById('result').innerHTML = feedback;
     }
-
-    const left = currentRound[index];
-    const right = currentRound[index + 1];
-
-    [left, right].forEach((candidate, i) => {
-      const div = document.createElement("div");
-      div.className = "candidate";
-      div.onclick = () => selectCandidate(i);
-      
-      const img = document.createElement("img");
-      img.src = candidate.img;
-      const name = document.createElement("div");
-      name.className = "candidate-name";
-      name.textContent = candidate.name;
-      
-      div.appendChild(img);
-      div.appendChild(name);
-      matchup.appendChild(div);
-    });
-  }
-
-  function selectCandidate(choice) {
-    const selected = currentRound[index + choice];
-    nextRound.push(selected);
-    index += 2;
-    renderMatchup();
-  }
-
-  function showWinner(winner) {
-    document.getElementById("title").textContent = "🏆 우승!";
-    const matchup = document.getElementById("matchup");
-    matchup.innerHTML = `
-      <div style="display: flex; gap: 20px; justify-content: center; align-items: flex-start; margin-top: 15px;">
-        <div style="text-align: center;">
-          <img src="${winner.img}" style="width: 600px; height: 600px; object-fit: contain; border-radius: 10px;"><br>
-          <div class="candidate-name" style="margin-top: 10px; font-weight: bold; font-size: 20px;">${winner.name}</div>
-        </div>
-        <div style="max-width: 500px; text-align: left; font-size: 24px; line-height: 1.6;">
-          <h3>개념 설명</h3>
-          <p>${winner.desc}</p>
-        </div>
-      </div>
-    `;
-  }
-
-
-  // 시작
-  renderMatchup();
-</script>
-
+  </script>
 </body>
 </html>
